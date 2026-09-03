@@ -1,5 +1,5 @@
 services:
   postgres:
     ports: ["${POSTGRES_HOST}:${POSTGRES_PORT}:5432"] 
-  redis:
-    ports: ["${REDIS_HOST}:${REDIS_PORT}:6379"]
+  valkey:
+    ports: ["${VALKEY_HOST}:${VALKEY_PORT}:6379"]
