@@ -1,0 +1,42 @@
+networks:
+  vps_net:
+    name: vps_net
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+      - POSTGRES_DB=default
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - vps_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d default"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASS}
+    volumes:
+      - redis_data:/data
+    networks:
+      - vps_net
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASS} ping | grep PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  postgres_data:
+  redis_data:
